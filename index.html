@@ -157,7 +157,11 @@
       place-items: center;
       box-shadow: 0 0 0 4px var(--ink);
       border-radius: 12px;
-      touch-action: manipulation;
+      touch-action: none;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
     }
     .touch-btn:active {
       background: rgba(14, 31, 47, 0.9);
@@ -645,13 +649,20 @@
         input.pointerActive = false;
       });
 
-      touchLeft.addEventListener("pointerdown", () => setInput("left", true));
-      touchLeft.addEventListener("pointerup", () => setInput("left", false));
-      touchLeft.addEventListener("pointerout", () => setInput("left", false));
-      touchJump.addEventListener("pointerdown", () => triggerJump());
-      touchRight.addEventListener("pointerdown", () => setInput("right", true));
-      touchRight.addEventListener("pointerup", () => setInput("right", false));
-      touchRight.addEventListener("pointerout", () => setInput("right", false));
+      const stop = (fn) => (e) => {
+        e.preventDefault();
+        fn(e);
+      };
+
+      touchLeft.addEventListener("pointerdown", stop(() => setInput("left", true)));
+      touchLeft.addEventListener("pointerup", stop(() => setInput("left", false)));
+      touchLeft.addEventListener("pointerout", stop(() => setInput("left", false)));
+      touchLeft.addEventListener("pointercancel", stop(() => setInput("left", false)));
+      touchJump.addEventListener("pointerdown", stop(() => triggerJump()));
+      touchRight.addEventListener("pointerdown", stop(() => setInput("right", true)));
+      touchRight.addEventListener("pointerup", stop(() => setInput("right", false)));
+      touchRight.addEventListener("pointerout", stop(() => setInput("right", false)));
+      touchRight.addEventListener("pointercancel", stop(() => setInput("right", false)));
 
       startBtn.addEventListener("click", startGame);
     })();
